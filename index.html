@@ -1,203 +1,271 @@
----
-import Base2 from "../layouts/Base2.astro";
----
+<!DOCTYPE html>
+<html lang="en">
 
-<Base2>
-    <div id="toastContainer" class="toast-container top-center"></div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanilla JavaScript Toast Notification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-    <button id="showSuccessToast" class="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600">Show Success
-        Toast</button>
-    <button id="showInfoToast" class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">Show Info
-        Toast</button>
-    <button id="showWarningToast" class="px-4 py-2 text-white bg-yellow-500 rounded hover:bg-yellow-600">Show Warning
-        Toast</button>
-    <button id="showDangerToast" class="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600">Show Danger
-        Toast</button>
+<body>
+    <div id="toastContainer" class="fixed block w-full group z-[99] sm:max-w-xs right-0 bottom-0 sm:mr-6 sm:mb-6"></div>
 
     <script>
-        const toastContainer = document.getElementById("toastContainer");
+        // Toast constructor function
+        function Toast(message, options) {
+            this.id = 'toast-' + Math.random().toString(16).slice(2);
+            this.message = message;
+            this.description = options.description || '';
+            this.type = options.type || 'default';
+            this.html = options.html || '';
+        }
 
-        function showToast(message, type = "default", position = "top-center") {
-            const toast = document.createElement("div");
-            toast.classList.add(
-                "relative",
-                "flex",
-                "flex-col",
-                "items-start",
-                "w-full",
-                "transition-all",
-                "duration-300",
-                "ease-out",
-                "bg-white",
-                "border",
-                "border-gray-100",
-                "shadow-md",
-                "sm:rounded-md",
-                "sm:max-w-xs",
-                "p-4",
-                "mb-4",
-                "opacity-0",
-                "-translate-y-full"
-            );
+        // Toast manager object
+        const toastManager = {
+            toasts: [],
+            toastContainer: document.getElementById('toastContainer'),
+            toastsHovered: false,
+            expanded: false,
+            layout: 'default',
+            position: 'bottom-right',
+            paddingBetweenToasts: 15,
 
-            const toastContent = document.createElement("div");
-            toastContent.classList.add("relative");
+            createToast: function (message, options) {
+                const toast = new Toast(message, options);
+                this.toasts.unshift(toast);
+                this.renderToast(toast);
+            },
 
-            const toastMessage = document.createElement("p");
-            toastMessage.classList.add(
-                "text-sm",
-                "font-medium",
-                "leading-none",
-                "text-gray-800",
-                "flex",
-                "items-center"
-            );
+            renderToast: function (toast) {
+                const toastElement = document.createElement('div');
+                toastElement.id = toast.id;
+                toastElement.classList.add('absolute', 'w-full', 'duration-300', 'ease-out', 'select-none', 'sm:max-w-xs');
+                if (!toast.description) {
+                    toastElement.classList.add('toast-no-description');
+                }
 
-            if (type === "success") {
-                toastMessage.classList.add("text-green-500");
-                toastMessage.innerHTML = `
-          <svg class="w-5 h-5 mr-1.5 -ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM16.7744 9.63269C17.1238 9.20501 17.0604 8.57503 16.6327 8.22559C16.2051 7.87615 15.5751 7.93957 15.2256 8.36725L10.6321 13.9892L8.65936 12.2524C8.24484 11.8874 7.61295 11.9276 7.248 12.3421C6.88304 12.7566 6.92322 13.3885 7.33774 13.7535L9.31046 15.4903C10.1612 16.2393 11.4637 16.1324 12.1808 15.2547L16.7744 9.63269Z" fill="currentColor"></path>
-          </svg>
-          ${message}
+                toastElement.innerHTML = `
+          <span class="relative flex flex-col items-start shadow-[0_5px_15px_-3px_rgb(0_0_0_/_0.08)] w-full transition-all duration-300 ease-out bg-white border border-gray-100 sm:rounded-md sm:max-w-xs group ${toast.html ? 'p-0' : 'p-4'}">
+            ${toast.html ? `<div>${toast.html}</div>` : `
+              <div class="relative">
+                <div class="flex items-center ${toast.type === 'success' ? 'text-green-500' : toast.type === 'info' ? 'text-blue-500' : toast.type === 'warning' ? 'text-orange-400' : toast.type === 'danger' ? 'text-red-500' : 'text-gray-800'}">
+                  ${toast.type === 'success' ? `
+                    <svg class="w-[18px] h-[18px] mr-1.5 -ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM16.7744 9.63269C17.1238 9.20501 17.0604 8.57503 16.6327 8.22559C16.2051 7.87615 15.5751 7.93957 15.2256 8.36725L10.6321 13.9892L8.65936 12.2524C8.24484 11.8874 7.61295 11.9276 7.248 12.3421C6.88304 12.7566 6.92322 13.3885 7.33774 13.7535L9.31046 15.4903C10.1612 16.2393 11.4637 16.1324 12.1808 15.2547L16.7744 9.63269Z" fill="currentColor"></path>
+                    </svg>
+                  ` : ''}
+                  <p class="text-[13px] font-medium leading-none text-gray-800">${toast.message}</p>
+                </div>
+                ${toast.description ? `<p class="mt-1.5 text-xs leading-none opacity-70 ${toast.type !== 'default' ? 'pl-5' : ''}">${toast.description}</p>` : ''}
+              </div>
+            `}
+            <span class="absolute right-0 p-1.5 mr-2.5 text-gray-400 duration-100 ease-in-out rounded-full opacity-0 cursor-pointer hover:bg-gray-50 hover:text-gray-500 top-1/2 -translate-y-1/2">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+              </svg>
+            </span>
+          </span>
         `;
-            } else if (type === "info") {
-                toastMessage.classList.add("text-blue-500");
-                toastMessage.innerHTML = `
-          <svg class="w-5 h-5 mr-1.5 -ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM12 9C12.5523 9 13 8.55228 13 8C13 7.44772 12.5523 7 12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z" fill="currentColor"></path>
-          </svg>
-          ${message}
-        `;
-            } else if (type === "warning") {
-                toastMessage.classList.add("text-yellow-400");
-                toastMessage.innerHTML = `
-          <svg class="w-5 h-5 mr-1.5 -ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.44829 4.46472C10.5836 2.51208 13.4105 2.51168 14.5464 4.46401L21.5988 16.5855C22.7423 18.5509 21.3145 21 19.05 21L4.94967 21C2.68547 21 1.25762 18.5516 2.4004 16.5862L9.44829 4.46472ZM11.9995 8C12.5518 8 12.9995 8.44772 12.9995 9V13C12.9995 13.5523 12.5518 14 11.9995 14C11.4473 14 10.9995 13.5523 10.9995 13V9C10.9995 8.44772 11.4473 8 11.9995 8ZM12.0009 15.99C11.4486 15.9892 11.0003 16.4363 10.9995 16.9886L10.9995 16.9986C10.9987 17.5509 11.4458 17.9992 11.9981 18C12.5504 18.0008 12.9987 17.5537 12.9995 17.0014L12.9995 16.9914C13.0003 16.4391 12.5532 15.9908 12.0009 15.99Z" fill="currentColor"></path>
-          </svg>
-          ${message}
-        `;
-            } else if (type === "danger") {
-                toastMessage.classList.add("text-red-500");
-                toastMessage.innerHTML = `
-          <svg class="w-5 h-5 mr-1.5 -ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9996 7C12.5519 7 12.9996 7.44772 12.9996 8V12C12.9996 12.5523 12.5519 13 11.9996 13C11.4474 13 10.9996 12.5523 10.9996 12V8C10.9996 7.44772 11.4474 7 11.9996 7ZM12.001 14.99C11.4488 14.9892 11.0004 15.4363 10.9997 15.9886L10.9996 15.9986C10.9989 16.5509 11.446 16.9992 11.9982 17C12.5505 17.0008 12.9989 16.5537 12.9996 16.0014L12.9996 15.9914C13.0004 15.4391 12.5533 14.9908 12.001 14.99Z" fill="currentColor"></path>
-          </svg>
-          ${message}
-        `;
-            } else {
-                toastMessage.classList.add("text-gray-800");
-                toastMessage.textContent = message;
+
+                toastElement.querySelector('span').addEventListener('click', () => {
+                    this.removeToast(toast.id);
+                });
+
+                toastElement.addEventListener('mouseover', () => {
+                    toastElement.querySelector('span').classList.add('opacity-100');
+                });
+
+                toastElement.addEventListener('mouseout', () => {
+                    toastElement.querySelector('span').classList.remove('opacity-100');
+                });
+
+                this.toastContainer.appendChild(toastElement);
+
+                setTimeout(() => {
+                    if (this.position.includes('bottom')) {
+                        toastElement.firstElementChild.classList.add('toast-bottom', 'opacity-0', 'translate-y-full');
+                    } else {
+                        toastElement.firstElementChild.classList.add('opacity-0', '-translate-y-full');
+                    }
+
+                    setTimeout(() => {
+                        if (this.position.includes('bottom')) {
+                            toastElement.firstElementChild.classList.remove('opacity-0', 'translate-y-full');
+                        } else {
+                            toastElement.firstElementChild.classList.remove('opacity-0', '-translate-y-full');
+                        }
+                        toastElement.firstElementChild.classList.add('opacity-100', 'translate-y-0');
+
+                        setTimeout(() => {
+                            this.stackToasts();
+                        }, 10);
+                    }, 5);
+                }, 50);
+
+                setTimeout(() => {
+                    setTimeout(() => {
+                        toastElement.firstElementChild.classList.remove('opacity-100');
+                        toastElement.firstElementChild.classList.add('opacity-0');
+                        if (this.toasts.length === 1) {
+                            toastElement.firstElementChild.classList.remove('translate-y-0');
+                            toastElement.firstElementChild.classList.add('-translate-y-full');
+                        }
+                        setTimeout(() => {
+                            this.removeToast(toast.id);
+                        }, 300);
+                    }, 5);
+                }, 4000);
+            },
+
+            removeToast: function (toastId) {
+                const toastElement = document.getElementById(toastId);
+                if (toastElement) {
+                    toastElement.remove();
+                }
+                this.toasts = this.toasts.filter(toast => toast.id !== toastId);
+                this.stackToasts();
+            },
+
+            stackToasts: function () {
+                this.positionToasts();
+                this.calculateHeightOfToastsContainer();
+                setTimeout(() => {
+                    this.calculateHeightOfToastsContainer();
+                }, 300);
+            },
+
+            positionToasts: function () {
+                if (this.toasts.length === 0) return;
+
+                const topToast = document.getElementById(this.toasts[0].id);
+                topToast.style.zIndex = '100';
+                if (this.expanded) {
+                    if (this.position.includes('bottom')) {
+                        topToast.style.top = 'auto';
+                        topToast.style.bottom = '0px';
+                    } else {
+                        topToast.style.top = '0px';
+                    }
+                }
+
+                if (this.toasts.length === 1) return;
+
+                const middleToast = document.getElementById(this.toasts[1].id);
+                middleToast.style.zIndex = '90';
+
+                if (this.expanded) {
+                    const middleToastPosition = topToast.getBoundingClientRect().height + this.paddingBetweenToasts + 'px';
+                    if (this.position.includes('bottom')) {
+                        middleToast.style.top = 'auto';
+                        middleToast.style.bottom = middleToastPosition;
+                    } else {
+                        middleToast.style.top = middleToastPosition;
+                    }
+                    middleToast.style.transform = 'translateY(0px)';
+                } else {
+                    middleToast.style.transform = this.position.includes('bottom') ? 'translateY(-16px)' : 'translateY(16px)';
+                }
+
+                if (this.toasts.length === 2) return;
+
+                const bottomToast = document.getElementById(this.toasts[2].id);
+                bottomToast.style.zIndex = '80';
+
+                if (this.expanded) {
+                    const bottomToastPosition = topToast.getBoundingClientRect().height + this.paddingBetweenToasts + middleToast.getBoundingClientRect().height + this.paddingBetweenToasts + 'px';
+                    if (this.position.includes('bottom')) {
+                        bottomToast.style.top = 'auto';
+                        bottomToast.style.bottom = bottomToastPosition;
+                    } else {
+                        bottomToast.style.top = bottomToastPosition;
+                    }
+                    bottomToast.style.transform = 'translateY(0px)';
+                } else {
+                    bottomToast.style.transform = this.position.includes('bottom') ? 'translateY(-32px)' : 'translateY(32px)';
+                }
+
+                if (this.toasts.length === 3) return;
+
+                const burnToast = document.getElementById(this.toasts[3].id);
+                burnToast.style.zIndex = '70';
+
+                if (this.expanded) {
+                    const burnToastPosition = topToast.getBoundingClientRect().height + this.paddingBetweenToasts + middleToast.getBoundingClientRect().height + this.paddingBetweenToasts + bottomToast.getBoundingClientRect().height + this.paddingBetweenToasts + 'px';
+                    if (this.position.includes('bottom')) {
+                        burnToast.style.top = 'auto';
+                        burnToast.style.bottom = burnToastPosition;
+                    } else {
+                        burnToast.style.top = burnToastPosition;
+                    }
+                    burnToast.style.transform = 'translateY(0px)';
+                } else {
+                    burnToast.style.transform = 'translateY(48px)';
+                }
+
+                burnToast.firstElementChild.classList.remove('opacity-100');
+                burnToast.firstElementChild.classList.add('opacity-0');
+
+                setTimeout(() => {
+                    this.toasts.pop();
+                }, 300);
+            },
+
+            calculateHeightOfToastsContainer: function () {
+                if (this.toasts.length === 0) {
+                    this.toastContainer.style.height = '0px';
+                    return;
+                }
+
+                const lastToast = this.toasts[this.toasts.length - 1];
+                const lastToastRectangle = document.getElementById(lastToast.id).getBoundingClientRect();
+
+                const firstToast = this.toasts[0];
+                const firstToastRectangle = document.getElementById(firstToast.id).getBoundingClientRect();
+
+                if (this.toastsHovered) {
+                    if (this.position.includes('bottom')) {
+                        this.toastContainer.style.height = (firstToastRectangle.top + firstToastRectangle.height - lastToastRectangle.top) + 'px';
+                    } else {
+                        this.toastContainer.style.height = (lastToastRectangle.top + lastToastRectangle.height - firstToastRectangle.top) + 'px';
+                    }
+                } else {
+                    this.toastContainer.style.height = firstToastRectangle.height + 'px';
+                }
             }
+        };
 
-            const closeButton = document.createElement("button");
-            closeButton.classList.add(
-                "absolute",
-                "top-1/2",
-                "-translate-y-1/2",
-                "right-0",
-                "p-1.5",
-                "mr-2.5",
-                "text-gray-400",
-                "duration-100",
-                "ease-in-out",
-                "rounded-full",
-                "opacity-0",
-                "cursor-pointer",
-                "hover:bg-gray-50",
-                "hover:text-gray-500"
-            );
-            closeButton.innerHTML = `
-        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-        </svg>
-      `;
-            closeButton.addEventListener("click", () => removeToast(toast));
-
-            toastContent.appendChild(toastMessage);
-            toast.appendChild(toastContent);
-            toast.appendChild(closeButton);
-
-            toastContainer.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.add("opacity-100", "translate-y-0");
-            }, 50);
-
-            setTimeout(() => {
-                removeToast(toast);
-            }, 4000);
-
-            // Set the position of the toast container
-            toastContainer.className = `toast-container ${position}`;
-        }
-
-        function removeToast(toast) {
-            toast.classList.remove("opacity-100", "translate-y-0");
-            toast.classList.add("opacity-0", "-translate-y-full");
-            setTimeout(() => {
-                toastContainer.removeChild(toast);
-            }, 300);
-        }
-
-        document
-            .getElementById("showSuccessToast")
-            .addEventListener("click", () => {
-                showToast("Success Notification", "success", "bottom-right");
-            });
-
-        document.getElementById("showInfoToast").addEventListener("click", () => {
-            showToast("Info Notification", "info", "top-left");
+        // Event listener for the 'toast-show' event
+        window.addEventListener('toast-show', function (event) {
+            const { message, description, type, position, html } = event.detail;
+            toastManager.createToast(message, { description, type, position, html });
         });
 
-        document
-            .getElementById("showWarningToast")
-            .addEventListener("click", () => {
-                showToast("Warning Notification", "warning", "bottom-right");
-            });
-
-        document.getElementById("showDangerToast").addEventListener("click", () => {
-            showToast("Danger Notification", "danger", "bottom-left");
-        });
+        // Example usage
+        window.dispatchEvent(new CustomEvent('toast-show', {
+            detail: {
+                message: 'Success Notification',
+                type: 'success',
+                position: 'bottom-right'
+            }
+        }));
+        // Example usage
+        window.dispatchEvent(new CustomEvent('toast-show', {
+            detail: {
+                message: 'Success Notification',
+                type: 'success',
+                position: 'bottom-right'
+            }
+        }));
+        // Example usage
+        window.dispatchEvent(new CustomEvent('toast-show', {
+            detail: {
+                message: 'Success Notification',
+                type: 'success',
+                position: 'bottom-right'
+            }
+        }));
     </script>
-</Base2>
-<style>
-    .toast-container {
-        position: fixed;
-        z-index: 99;
-        max-width: 300px;
-        transition: all 0.3s ease-out;
-    }
+</body>
 
-    .toast-container.top-left {
-        top: 20px;
-        left: 20px;
-    }
-
-    .toast-container.top-center {
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    .toast-container.top-right {
-        top: 20px;
-        right: 20px;
-    }
-
-    .toast-container.bottom-left {
-        bottom: 20px;
-        left: 20px;
-    }
-
-    .toast-container.bottom-center {
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    .toast-container.bottom-right {
-        bottom: 20px;
-        right: 20px;
-    }
-</style>
+</html>
