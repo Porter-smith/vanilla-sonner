@@ -67,16 +67,17 @@
           </span>
         `;
 
-                toastElement.querySelector('span').addEventListener('click', () => {
+                const closeButton = toastElement.querySelector('span');
+                closeButton.addEventListener('click', () => {
                     this.removeToast(toast.id);
                 });
 
-                toastElement.addEventListener('mouseover', () => {
-                    toastElement.querySelector('span').classList.add('opacity-100');
+                toastElement.addEventListener('mouseenter', () => {
+                    closeButton.classList.add('opacity-100');
                 });
 
-                toastElement.addEventListener('mouseout', () => {
-                    toastElement.querySelector('span').classList.remove('opacity-100');
+                toastElement.addEventListener('mouseleave', () => {
+                    closeButton.classList.remove('opacity-100');
                 });
 
                 this.toastContainer.appendChild(toastElement);
@@ -127,12 +128,40 @@
             },
 
             stackToasts: function () {
-                this.positionToasts();
+                if (this.toasts.length === 0) return;
+
+                this.toasts.forEach((toast, index) => {
+                    const toastElement = document.getElementById(toast.id);
+                    if (!toastElement) return;
+
+                    toastElement.style.zIndex = 100 - index * 10; // Adjust the zIndex for layering
+
+                    if (this.expanded) {
+                        const yOffset = index * (toastElement.getBoundingClientRect().height + this.paddingBetweenToasts);
+                        if (this.position.includes('bottom')) {
+                            toastElement.style.bottom = yOffset + 'px';
+                            toastElement.style.top = 'auto';
+                        } else {
+                            toastElement.style.top = yOffset + 'px';
+                            toastElement.style.bottom = 'auto';
+                        }
+                        toastElement.style.transform = 'translateY(0)';
+                    } else {
+                        if (this.position.includes('bottom')) {
+                            toastElement.style.bottom = '0px';
+                            toastElement.style.top = 'auto';
+                            toastElement.style.transform = `translateY(${index * -16}px)`;
+                        } else {
+                            toastElement.style.top = '0px';
+                            toastElement.style.bottom = 'auto';
+                            toastElement.style.transform = `translateY(${index * 16}px)`;
+                        }
+                    }
+                });
+
                 this.calculateHeightOfToastsContainer();
-                setTimeout(() => {
-                    this.calculateHeightOfToastsContainer();
-                }, 300);
             },
+
 
             positionToasts: function () {
                 if (this.toasts.length === 0) return;
@@ -274,7 +303,7 @@
             detail: {
                 message: 'Success Notification',
                 type: 'success',
-                position: 'bottom-right'
+                position: 'top-right'
             }
         }));
     </script>
