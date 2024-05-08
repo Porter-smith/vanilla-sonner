@@ -30,7 +30,6 @@
             layout: 'default',
             position: 'bottom-right',
             paddingBetweenToasts: 15,
-
             createToast: function (message, options) {
                 const toast = new Toast(message, options);
                 this.toasts.unshift(toast);
@@ -223,7 +222,7 @@
                 const firstToast = this.toasts[0];
                 const firstToastRectangle = document.getElementById(firstToast.id).getBoundingClientRect();
 
-                if (this.toastsHovered) {
+                if (this.expanded) {
                     if (this.position.includes('bottom')) {
                         this.toastContainer.style.height = (firstToastRectangle.top + firstToastRectangle.height - lastToastRectangle.top) + 'px';
                     } else {
@@ -234,6 +233,19 @@
                 }
             }
         };
+
+        // Event listeners for hover expansion
+        toastManager.toastContainer.addEventListener('mouseenter', () => {
+            toastManager.toastsHovered = true;
+            toastManager.expanded = true;
+            toastManager.stackToasts();
+        });
+
+        toastManager.toastContainer.addEventListener('mouseleave', () => {
+            toastManager.toastsHovered = false;
+            toastManager.expanded = false;
+            toastManager.stackToasts();
+        });
 
         // Event listener for the 'toast-show' event
         window.addEventListener('toast-show', function (event) {
