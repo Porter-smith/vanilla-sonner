@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanilla JavaScript Toast</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <div id="toast-container" class="fixed bottom-0 right-0 m-6"></div>
+
+    <script>
+        function showToast(message, options = {}) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.classList.add('bg-white', 'border', 'border-gray-100', 'p-4', 'mb-4', 'rounded-md', 'shadow-md');
+
+            const messageElement = document.createElement('p');
+            messageElement.classList.add('text-gray-800', 'text-sm', 'font-medium');
+            messageElement.textContent = message;
+            toast.appendChild(messageElement);
+
+            if (options.description) {
+                const descriptionElement = document.createElement('p');
+                descriptionElement.classList.add('mt-1', 'text-gray-600', 'text-xs');
+                descriptionElement.textContent = options.description;
+                toast.appendChild(descriptionElement);
+            }
+
+            if (options.type) {
+                const iconElement = document.createElement('div');
+                iconElement.classList.add('absolute', 'top-2', 'left-2');
+
+                if (options.type === 'success') {
+                    iconElement.innerHTML = `
+                        <svg class="w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM16.7744 9.63269C17.1238 9.20501 17.0604 8.57503 16.6327 8.22559C16.2051 7.87615 15.5751 7.93957 15.2256 8.36725L10.6321 13.9892L8.65936 12.2524C8.24484 11.8874 7.61295 11.9276 7.248 12.3421C6.88304 12.7566 6.92322 13.3885 7.33774 13.7535L9.31046 15.4903C10.1612 16.2393 11.4637 16.1324 12.1808 15.2547L16.7744 9.63269Z" fill="currentColor"></path>
+                        </svg>
+                    `;
+                } else if (options.type === 'info') {
+                    iconElement.innerHTML = `
+                        <svg class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM11 7C11 6.44772 11.4477 6 12 6C12.5523 6 13 6.44772 13 7C13 7.55228 12.5523 8 12 8C11.4477 8 11 7.55228 11 7ZM13 10C13 9.44772 12.5523 9 12 9C11.4477 9 11 9.44772 11 10V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V10Z" fill="currentColor"></path>
+                        </svg>
+                    `;
+                } else if (options.type === 'warning') {
+                    iconElement.innerHTML = `
+                        <svg class="w-5 h-5 text-orange-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM12 14C11.4477 14 11 14.4477 11 15C11 15.5523 11.4477 16 12 16C12.5523 16 13 15.5523 13 15C13 14.4477 12.5523 14 12 14ZM11 8V12C11 12.5523 11.4477 13 12 13C12.5523 13 13 12.5523 13 12V8C13 7.44772 12.5523 7 12 7C11.4477 7 11 7.44772 11 8Z" fill="currentColor"></path>
+                        </svg>
+                    `;
+                } else if (options.type === 'danger') {
+                    iconElement.innerHTML = `
+                        <svg class="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM12 15C12.5523 15 13 14.5523 13 14C13 13.4477 12.5523 13 12 13C11.4477 13 11 13.4477 11 14C11 14.5523 11.4477 15 12 15ZM11 8C11 7.44772 11.4477 7 12 7C12.5523 7 13 7.44772 13 8V11C13 11.5523 12.5523 12 12 12C11.4477 12 11 11.5523 11 11V8Z" fill="currentColor"></path>
+                        </svg>
+                    `;
+                }
+
+                toast.appendChild(iconElement);
+            }
+
+            const closeButton = document.createElement('button');
+            closeButton.classList.add('absolute', 'top-2', 'right-2', 'text-gray-400', 'hover:text-gray-500');
+            closeButton.innerHTML = '&times;';
+            closeButton.addEventListener('click', () => {
+                toast.remove();
+            });
+            toast.appendChild(closeButton);
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, options.duration || 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            showToast('Welcome to Vanilla JavaScript Toast', {
+                description: 'This is an example of a default toast notification.',
+                type: 'success',
+                duration: 5000
+            });
+
+            showToast('Welcome to Vanilla JavaScript Toast', {
+                description: 'This is an example of a default toast notification.',
+                type: 'info',
+                duration: 5000
+            });
+        });
+    </script>
+</body>
+
+</html>
