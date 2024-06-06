@@ -119,7 +119,7 @@
             `
             }
             <span style="position: absolute; right: 0; padding: 6px; margin-right: 10px; color: #9ca3af; transition: opacity 0.1s ease-in-out; border-radius: 9999px; cursor: pointer; top: 50%; transform: translateY(-50%);">
-    
+      
             </span>
           </span>
         `;
@@ -139,44 +139,51 @@
 
       this.toastContainer.appendChild(toastElement);
 
+      const animationTimeout = 5; // Timeout for the animation
+      const durationTimeout = toast.duration; // Timeout for the toast duration
+      const fadeOutTimeout = 300; // Timeout for the fade-out animation
+
+      // Initial timeout before starting the animation
+      if (this.position.includes("bottom")) {
+        toastElement.firstElementChild.style.transform = "translateY(100%)";
+        toastElement.firstElementChild.style.opacity = "0";
+      } else {
+        toastElement.firstElementChild.style.transform = "translateY(-100%)";
+        toastElement.firstElementChild.style.opacity = "0";
+      }
+
+      // Timeout for the animation
       setTimeout(() => {
         if (this.position.includes("bottom")) {
-          toastElement.firstElementChild.style.transform = "translateY(100%)";
-          toastElement.firstElementChild.style.opacity = "0";
+          toastElement.firstElementChild.style.transform = "translateY(0)";
+          toastElement.firstElementChild.style.opacity = "1";
         } else {
-          toastElement.firstElementChild.style.transform = "translateY(-100%)";
-          toastElement.firstElementChild.style.opacity = "0";
+          toastElement.firstElementChild.style.transform = "translateY(0)";
+          toastElement.firstElementChild.style.opacity = "1";
         }
 
+        // Timeout to stack toasts after animation
         setTimeout(() => {
-          if (this.position.includes("bottom")) {
-            toastElement.firstElementChild.style.transform = "translateY(0)";
-            toastElement.firstElementChild.style.opacity = "1";
-          } else {
-            toastElement.firstElementChild.style.transform = "translateY(0)";
-            toastElement.firstElementChild.style.opacity = "1";
-          }
+          this.stackToasts();
+        }, 10);
+      }, animationTimeout);
 
-          setTimeout(() => {
-            this.stackToasts();
-          }, 10);
-        }, 5);
-      }, 50);
-
+      // Timeout for the toast duration
       setTimeout(() => {
+        // Timeout for the fade-out animation
         setTimeout(() => {
           toastElement.firstElementChild.style.opacity = "0";
           if (this.toasts.length === 1) {
             toastElement.firstElementChild.style.transform =
               "translateY(-100%)";
           }
+          // Timeout to remove toast after fade-out animation
           setTimeout(() => {
             this.removeToast(toast.id);
-          }, 300);
-        }, 5);
-      }, toast.duration); // Use the toast duration here
+          }, fadeOutTimeout);
+        }, animationTimeout);
+      }, durationTimeout); // Use the toast duration here
     },
-
     removeToast: function (toastId) {
       const toastElement = document.getElementById(toastId);
       if (toastElement) {
