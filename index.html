@@ -39,6 +39,7 @@
     <div id="buttonContainer">
         <button class="styled-button" id="successButton">Success</button>
         <button class="styled-button" id="infoButton">Info</button>
+        <button class="styled-button" id="descriptionButton">Description</button>
         <button class="styled-button" id="warningButton">Warning</button>
         <button class="styled-button" id="dangerButton">Danger</button>
         <button class="styled-button" id="customButton">Custom</button>
@@ -55,7 +56,17 @@
                 }
             }));
         });
-
+        document.getElementById('descriptionButton').addEventListener('click', function () {
+            window.dispatchEvent(new CustomEvent('toast-show', {
+                detail: {
+                    message: 'Event has been created',
+                    type: 'success',
+                    description: "Monday, January 3rd at 6:00pm",
+                    position: 'bottom-right',
+                    duration: 5000000, // Duration in milliseconds,
+                }
+            }));
+        });
         document.getElementById('infoButton').addEventListener('click', function () {
             window.dispatchEvent(new CustomEvent('toast-show', {
                 detail: {
@@ -71,7 +82,7 @@
                 detail: {
                     message: 'Warning Notification',
                     type: 'warning',
-                    position: 'bottom-right'
+                    position: 'top-right'
                 }
             }));
         });

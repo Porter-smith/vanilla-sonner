@@ -7,50 +7,112 @@
     this.type = options.type || "default";
     this.html = options.html || "";
     this.duration = options.duration || 4000; // Default duration of 4 seconds
+    this.position = options.position || "bottom-right"; // Default position
   }
 
   // Toast manager object
   const toastManager = {
-    toasts: [],
-    toastContainer: null,
+    toasts: {
+      "top-left": [],
+      "top-center": [],
+      "top-right": [],
+      "bottom-left": [],
+      "bottom-center": [],
+      "bottom-right": [],
+    },
+    toastContainers: {},
     toastsHovered: false,
     expanded: false,
-    layout: "default",
-    position: "bottom-right",
     paddingBetweenToasts: 15,
     init: function () {
-      this.toastContainer = document.createElement("div");
-      this.toastContainer.id = "toastContainer";
-      this.toastContainer.style.position = "fixed";
-      this.toastContainer.style.display = "block";
-      this.toastContainer.style.width = "100%";
-      this.toastContainer.style.zIndex = "99";
-      this.toastContainer.style.maxWidth = "300px";
-      this.toastContainer.style.right = "0";
-      this.toastContainer.style.bottom = "0";
-      this.toastContainer.style.marginRight = "24px";
-      this.toastContainer.style.marginBottom = "24px";
-      document.body.appendChild(this.toastContainer);
+      const positions = [
+        "top-left",
+        "top-center",
+        "top-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right",
+      ];
+
+      positions.forEach((position) => {
+        this.toastContainers[position] = null; // Initialize container references
+      });
+    },
+    createContainer: function (position) {
+      const container = document.createElement("div");
+      container.id = `toastContainer-${position}`;
+      container.style.position = "fixed";
+      container.style.display = "block";
+      container.style.width = "100%";
+      container.style.zIndex = "99";
+      container.style.maxWidth = "300px";
+      container.style.margin = "24px";
+      this.setPosition(container, position);
+      document.body.appendChild(container);
+      this.toastContainers[position] = container;
 
       // Event listeners for hover expansion
-      this.toastContainer.addEventListener("mouseenter", () => {
+      container.addEventListener("mouseenter", () => {
         this.toastsHovered = true;
         this.expanded = true;
-        this.stackToasts();
+        this.stackToasts(position);
       });
 
-      this.toastContainer.addEventListener("mouseleave", () => {
+      container.addEventListener("mouseleave", () => {
         this.toastsHovered = false;
         this.expanded = false;
-        this.stackToasts();
+        this.stackToasts(position);
       });
+
+      return container;
+    },
+    setPosition: function (container, position) {
+      container.style.top = "auto";
+      container.style.bottom = "auto";
+      container.style.left = "auto";
+      container.style.right = "auto";
+
+      switch (position) {
+        case "top-left":
+          container.style.top = "0";
+          container.style.left = "0";
+          break;
+        case "top-center":
+          container.style.top = "0";
+          container.style.left = "50%";
+          container.style.transform = "translateX(-50%)";
+          break;
+        case "top-right":
+          container.style.top = "0";
+          container.style.right = "0";
+          break;
+        case "bottom-left":
+          container.style.bottom = "0";
+          container.style.left = "0";
+          break;
+        case "bottom-center":
+          container.style.bottom = "0";
+          container.style.left = "50%";
+          container.style.transform = "translateX(-50%)";
+          break;
+        case "bottom-right":
+        default:
+          container.style.bottom = "0";
+          container.style.right = "0";
+          break;
+      }
     },
     createToast: function (message, options) {
       const toast = new Toast(message, options);
-      this.toasts.unshift(toast);
+      this.toasts[toast.position].unshift(toast);
+
+      // Create container if it doesn't exist
+      if (!this.toastContainers[toast.position]) {
+        this.createContainer(toast.position);
+      }
+
       this.renderToast(toast);
     },
-
     renderToast: function (toast) {
       const toastElement = document.createElement("div");
       toastElement.id = toast.id;
@@ -110,9 +172,9 @@
                 </div>
                 ${
                   toast.description
-                    ? `<p style="margin-top: 6px; font-size: 12px; opacity: 0.7; ${
+                    ? `<div style="margin-top: 6px; font-size: 12px; opacity: 0.7; ${
                         toast.type !== "default" ? "padding-left: 20px;" : ""
-                      }">${toast.description}</p>`
+                      }">${toast.description}</div>`
                     : ""
                 }
               </div>
@@ -126,7 +188,7 @@
 
       const closeButton = toastElement.querySelector("span");
       closeButton.addEventListener("click", () => {
-        this.removeToast(toast.id);
+        this.removeToast(toast.id, toast.position);
       });
 
       toastElement.addEventListener("mouseenter", () => {
@@ -137,14 +199,14 @@
         closeButton.style.opacity = "0";
       });
 
-      this.toastContainer.appendChild(toastElement);
+      this.toastContainers[toast.position].appendChild(toastElement);
 
       const animationTimeout = 5; // Timeout for the animation
       const durationTimeout = toast.duration; // Timeout for the toast duration
       const fadeOutTimeout = 300; // Timeout for the fade-out animation
 
       // Initial timeout before starting the animation
-      if (this.position.includes("bottom")) {
+      if (toast.position.includes("bottom")) {
         toastElement.firstElementChild.style.transform = "translateY(100%)";
         toastElement.firstElementChild.style.opacity = "0";
       } else {
@@ -154,17 +216,12 @@
 
       // Timeout for the animation
       setTimeout(() => {
-        if (this.position.includes("bottom")) {
-          toastElement.firstElementChild.style.transform = "translateY(0)";
-          toastElement.firstElementChild.style.opacity = "1";
-        } else {
-          toastElement.firstElementChild.style.transform = "translateY(0)";
-          toastElement.firstElementChild.style.opacity = "1";
-        }
+        toastElement.firstElementChild.style.transform = "translateY(0)";
+        toastElement.firstElementChild.style.opacity = "1";
 
         // Timeout to stack toasts after animation
         setTimeout(() => {
-          this.stackToasts();
+          this.stackToasts(toast.position);
         }, 10);
       }, animationTimeout);
 
@@ -173,30 +230,41 @@
         // Timeout for the fade-out animation
         setTimeout(() => {
           toastElement.firstElementChild.style.opacity = "0";
-          if (this.toasts.length === 1) {
+          if (this.toasts[toast.position].length === 1) {
             toastElement.firstElementChild.style.transform =
               "translateY(-100%)";
           }
           // Timeout to remove toast after fade-out animation
           setTimeout(() => {
-            this.removeToast(toast.id);
+            this.removeToast(toast.id, toast.position);
           }, fadeOutTimeout);
         }, animationTimeout);
       }, durationTimeout); // Use the toast duration here
     },
-    removeToast: function (toastId) {
+    removeToast: function (toastId, position) {
       const toastElement = document.getElementById(toastId);
       if (toastElement) {
         toastElement.remove();
       }
-      this.toasts = this.toasts.filter((toast) => toast.id !== toastId);
-      this.stackToasts();
+      this.toasts[position] = this.toasts[position].filter(
+        (toast) => toast.id !== toastId
+      );
+      this.stackToasts(position);
+
+      // Remove container if no more toasts in this position
+      if (this.toasts[position].length === 0) {
+        const container = this.toastContainers[position];
+        if (container) {
+          container.remove();
+          this.toastContainers[position] = null;
+        }
+      }
     },
 
-    stackToasts: function () {
-      if (this.toasts.length === 0) return;
+    stackToasts: function (position) {
+      if (this.toasts[position].length === 0) return;
 
-      this.toasts.forEach((toast, index) => {
+      this.toasts[position].forEach((toast, index) => {
         const toastElement = document.getElementById(toast.id);
         if (!toastElement) return;
 
@@ -207,7 +275,7 @@
             index *
             (toastElement.getBoundingClientRect().height +
               this.paddingBetweenToasts);
-          if (this.position.includes("bottom")) {
+          if (toast.position.includes("bottom")) {
             toastElement.style.bottom = yOffset + "px";
             toastElement.style.top = "auto";
           } else {
@@ -216,7 +284,7 @@
           }
           toastElement.style.transform = "translateY(0)";
         } else {
-          if (this.position.includes("bottom")) {
+          if (toast.position.includes("bottom")) {
             toastElement.style.bottom = "0px";
             toastElement.style.top = "auto";
             toastElement.style.transform = `translateY(${index * -16}px)`;
@@ -228,135 +296,42 @@
         }
       });
 
-      this.calculateHeightOfToastsContainer();
+      this.calculateHeightOfToastsContainer(position);
     },
 
-    positionToasts: function () {
-      if (this.toasts.length === 0) return;
-
-      const topToast = document.getElementById(this.toasts[0].id);
-      topToast.style.zIndex = "100";
-      if (this.expanded) {
-        if (this.position.includes("bottom")) {
-          topToast.style.top = "auto";
-          topToast.style.bottom = "0px";
-        } else {
-          topToast.style.top = "0px";
-        }
-      }
-
-      if (this.toasts.length === 1) return;
-
-      const middleToast = document.getElementById(this.toasts[1].id);
-      middleToast.style.zIndex = "90";
-
-      if (this.expanded) {
-        const middleToastPosition =
-          topToast.getBoundingClientRect().height +
-          this.paddingBetweenToasts +
-          "px";
-        if (this.position.includes("bottom")) {
-          middleToast.style.top = "auto";
-          middleToast.style.bottom = middleToastPosition;
-        } else {
-          middleToast.style.top = middleToastPosition;
-        }
-        middleToast.style.transform = "translateY(0px)";
-      } else {
-        middleToast.style.transform = this.position.includes("bottom")
-          ? "translateY(-16px)"
-          : "translateY(16px)";
-      }
-
-      if (this.toasts.length === 2) return;
-
-      const bottomToast = document.getElementById(this.toasts[2].id);
-      bottomToast.style.zIndex = "80";
-
-      if (this.expanded) {
-        const bottomToastPosition =
-          topToast.getBoundingClientRect().height +
-          this.paddingBetweenToasts +
-          middleToast.getBoundingClientRect().height +
-          this.paddingBetweenToasts +
-          "px";
-        if (this.position.includes("bottom")) {
-          bottomToast.style.top = "auto";
-          bottomToast.style.bottom = bottomToastPosition;
-        } else {
-          bottomToast.style.top = bottomToastPosition;
-        }
-        bottomToast.style.transform = "translateY(0px)";
-      } else {
-        bottomToast.style.transform = this.position.includes("bottom")
-          ? "translateY(-32px)"
-          : "translateY(32px)";
-      }
-
-      if (this.toasts.length === 3) return;
-
-      const burnToast = document.getElementById(this.toasts[3].id);
-      burnToast.style.zIndex = "70";
-
-      if (this.expanded) {
-        const burnToastPosition =
-          topToast.getBoundingClientRect().height +
-          this.paddingBetweenToasts +
-          middleToast.getBoundingClientRect().height +
-          this.paddingBetweenToasts +
-          bottomToast.getBoundingClientRect().height +
-          this.paddingBetweenToasts +
-          "px";
-        if (this.position.includes("bottom")) {
-          burnToast.style.top = "auto";
-          burnToast.style.bottom = burnToastPosition;
-        } else {
-          burnToast.style.top = burnToastPosition;
-        }
-        burnToast.style.transform = "translateY(0px)";
-      } else {
-        burnToast.style.transform = "translateY(48px)";
-      }
-
-      burnToast.firstElementChild.style.opacity = "0";
-
-      setTimeout(() => {
-        this.toasts.pop();
-      }, 300);
-    },
-
-    calculateHeightOfToastsContainer: function () {
-      if (this.toasts.length === 0) {
-        this.toastContainer.style.height = "0px";
+    calculateHeightOfToastsContainer: function (position) {
+      if (this.toasts[position].length === 0) {
+        this.toastContainers[position].style.height = "0px";
         return;
       }
 
-      const lastToast = this.toasts[this.toasts.length - 1];
+      const lastToast = this.toasts[position][this.toasts[position].length - 1];
       const lastToastRectangle = document
         .getElementById(lastToast.id)
         .getBoundingClientRect();
 
-      const firstToast = this.toasts[0];
+      const firstToast = this.toasts[position][0];
       const firstToastRectangle = document
         .getElementById(firstToast.id)
         .getBoundingClientRect();
 
       if (this.expanded) {
-        if (this.position.includes("bottom")) {
-          this.toastContainer.style.height =
+        if (position.includes("bottom")) {
+          this.toastContainers[position].style.height =
             firstToastRectangle.top +
             firstToastRectangle.height -
             lastToastRectangle.top +
             "px";
         } else {
-          this.toastContainer.style.height =
+          this.toastContainers[position].style.height =
             lastToastRectangle.top +
             lastToastRectangle.height -
             firstToastRectangle.top +
             "px";
         }
       } else {
-        this.toastContainer.style.height = firstToastRectangle.height + "px";
+        this.toastContainers[position].style.height =
+          firstToastRectangle.height + "px";
       }
     },
   };
