@@ -24,6 +24,7 @@
     toastsHovered: false,
     expanded: false,
     paddingBetweenToasts: 15,
+    maxToasts: 3, // Maximum number of toasts in a container
     init: function () {
       const positions = [
         "top-left",
@@ -109,6 +110,12 @@
       // Create container if it doesn't exist
       if (!this.toastContainers[toast.position]) {
         this.createContainer(toast.position);
+      }
+
+      // Check if the number of toasts exceeds the maxToasts
+      if (this.toasts[toast.position].length > this.maxToasts) {
+        const oldestToast = this.toasts[toast.position].pop();
+        this.burnToast(oldestToast.id, toast.position);
       }
 
       this.renderToast(toast);
@@ -203,7 +210,6 @@
 
       const animationTimeout = 5; // Timeout for the animation
       const durationTimeout = toast.duration; // Timeout for the toast duration
-      const fadeOutTimeout = 300; // Timeout for the fade-out animation
 
       // Initial timeout before starting the animation
       if (toast.position.includes("bottom")) {
@@ -227,19 +233,21 @@
 
       // Timeout for the toast duration
       setTimeout(() => {
-        // Timeout for the fade-out animation
-        setTimeout(() => {
-          toastElement.firstElementChild.style.opacity = "0";
-          if (this.toasts[toast.position].length === 1) {
-            toastElement.firstElementChild.style.transform =
-              "translateY(-100%)";
-          }
-          // Timeout to remove toast after fade-out animation
-          setTimeout(() => {
-            this.removeToast(toast.id, toast.position);
-          }, fadeOutTimeout);
-        }, animationTimeout);
+        this.burnToast(toast.id, toast.position);
       }, durationTimeout); // Use the toast duration here
+    },
+    burnToast: function (toastId, position) {
+      const fadeOutTimeout = 300; // Timeout for the fade-out animation
+      const toastElement = document.getElementById(toastId);
+      if (toastElement) {
+        toastElement.firstElementChild.style.opacity = "0";
+        if (this.toasts[position].length === 1) {
+          toastElement.firstElementChild.style.transform = "translateY(-100%)";
+        }
+        setTimeout(() => {
+          this.removeToast(toastId, position);
+        }, fadeOutTimeout);
+      }
     },
     removeToast: function (toastId, position) {
       const toastElement = document.getElementById(toastId);
