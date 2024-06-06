@@ -1,6 +1,6 @@
 ### vanilla-sonner
 
-**Note:** This is an highly experimental project. Do not use it in production yet as it is a work in progress.
+**Note:** This is a highly experimental project. Do not use it in production yet as it is a work in progress.
 
 ## Quick Start
 
@@ -22,6 +22,7 @@ Add the following buttons to your HTML to trigger different types of toasts:
     <button class="styled-button" id="infoButton">Info</button>
     <button class="styled-button" id="warningButton">Warning</button>
     <button class="styled-button" id="dangerButton">Danger</button>
+    <button class="styled-button" id="promiseButton">Promise</button>
 </div>
 ```
 
@@ -67,6 +68,40 @@ Add event listeners to trigger the toasts:
                 position: 'bottom-right'
             }
         }));
+    });
+
+    document.getElementById('promiseButton').addEventListener('click', function () {
+        const promise = new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve('Promise Resolved');
+            }, 2000);
+        });
+
+        window.dispatchEvent(new CustomEvent('toast-show', {
+            detail: {
+                message: 'Loading...',
+                type: 'default',
+                promise
+            }
+        }));
+
+        promise.then((result) => {
+            window.dispatchEvent(new CustomEvent('toast-show', {
+                detail: {
+                    message: result,
+                    type: 'success',
+                    position: 'bottom-right'
+                }
+            }));
+        }).catch((error) => {
+            window.dispatchEvent(new CustomEvent('toast-show', {
+                detail: {
+                    message: error,
+                    type: 'danger',
+                    position: 'bottom-right'
+                }
+            }));
+        });
     });
 </script>
 ```
@@ -200,3 +235,13 @@ promise.then(() => {
     }));
 });
 ```
+
+### References
+
+This project was inspired by and uses concepts from the following projects:
+
+- [Pines Toast Documentation](https://devdojo.com/pines/docs/toast)
+- [Sonner by Emil Kowalski](https://github.com/emilkowalski/sonner)
+- [Svelte-Sonner by Wobsoriano](https://github.com/wobsoriano/svelte-sonner)
+
+This documentation outlines how to include `vanilla-sonner` in your project using a CDN and provides examples of how to use different types of toasts. Adjust the CDN URL to point to your actual repository.
