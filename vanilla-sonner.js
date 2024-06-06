@@ -6,6 +6,7 @@
     this.description = options.description || "";
     this.type = options.type || "default";
     this.html = options.html || "";
+    this.duration = options.duration || 4000; // Default duration of 4 seconds
   }
 
   // Toast manager object
@@ -63,9 +64,21 @@
       }
 
       toastElement.innerHTML = `
-          <span style="position: relative; display: flex; flex-direction: column; align-items: flex-start; box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.08); width: 100%; transition: all 0.3s ease-out; background-color: white; border: 1px solid #e2e8f0; border-radius: 0.375rem; ${
-            toast.html ? "padding: 0;" : "padding: 16px;"
-          }">
+          <span style="
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+            box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.08); 
+            width: 100%; 
+            transition: all 0.3s ease-out; 
+            background-color: white; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 0.375rem; 
+            ${toast.html ? "padding: 0;" : "padding: 16px;"}
+            box-sizing: border-box;
+            font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+          ">
             ${
               toast.html
                 ? `<div>${toast.html}</div>`
@@ -91,7 +104,7 @@
                     `
                         : ""
                     }
-                  <p style="font-size: 13px; font-weight: 500; color: #1f2937;">${
+                  <p style="font-size: 13px; font-weight: 500; color: #1f2937; margin: 0;">${
                     toast.message
                   }</p>
                 </div>
@@ -161,7 +174,7 @@
             this.removeToast(toast.id);
           }, 300);
         }, 5);
-      }, 4000);
+      }, toast.duration); // Use the toast duration here
     },
 
     removeToast: function (toastId) {
@@ -343,8 +356,15 @@
 
   // Event listener for the 'toast-show' event
   window.addEventListener("toast-show", function (event) {
-    const { message, description, type, position, html } = event.detail;
-    toastManager.createToast(message, { description, type, position, html });
+    const { message, description, type, position, html, duration } =
+      event.detail;
+    toastManager.createToast(message, {
+      description,
+      type,
+      position,
+      html,
+      duration,
+    });
   });
 
   // Initialize toastManager on DOMContentLoaded
