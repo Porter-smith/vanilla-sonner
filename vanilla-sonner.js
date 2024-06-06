@@ -173,7 +173,7 @@
                 ${
                   toast.description
                     ? `<div style="margin-top: 6px; font-size: 12px; opacity: 0.7; ${
-                        toast.type !== "default" ? "padding-left: 20px;" : ""
+                        toast.type !== "default" ? "" : ""
                       }">${toast.description}</div>`
                     : ""
                 }
