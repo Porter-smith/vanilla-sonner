@@ -264,17 +264,18 @@
     stackToasts: function (position) {
       if (this.toasts[position].length === 0) return;
 
+      let totalHeight = 0;
+
       this.toasts[position].forEach((toast, index) => {
         const toastElement = document.getElementById(toast.id);
         if (!toastElement) return;
 
         toastElement.style.zIndex = 100 - index * 10; // Adjust the zIndex for layering
 
+        const toastHeight = toastElement.getBoundingClientRect().height;
+        const yOffset = totalHeight;
+
         if (this.expanded) {
-          const yOffset =
-            index *
-            (toastElement.getBoundingClientRect().height +
-              this.paddingBetweenToasts);
           if (toast.position.includes("bottom")) {
             toastElement.style.bottom = yOffset + "px";
             toastElement.style.top = "auto";
@@ -294,6 +295,8 @@
             toastElement.style.transform = `translateY(${index * 16}px)`;
           }
         }
+
+        totalHeight += toastHeight + this.paddingBetweenToasts;
       });
 
       this.calculateHeightOfToastsContainer(position);
