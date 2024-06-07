@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanilla JavaScript Toast Notification</title>
+    <script type="module"
+        src="https://cdn.jsdelivr.net/gh/Porter-smith/vanilla-sonner@v0.0.1/dist/vanilla-sonner.min.js"></script>
+
+    <style>
+        .styled-button {
+            padding: 8px 12px;
+            margin: 0 5px 5px 0;
+            background: #fcfcfc;
+            border: 1px solid #f3f3f3;
+            white-space: nowrap;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+            cursor: pointer;
+            color: #171717;
+            transition: border-color .2s, background .2s, box-shadow .2s;
+        }
+
+        .styled-button:hover {
+            background: #f8f8f8;
+            border-color: #e2e2e2;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #buttonContainer {
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="buttonContainer">
+        <button class="styled-button" id="successButton">Success</button>
+        <button class="styled-button" id="infoButton">Info</button>
+        <button class="styled-button" id="descriptionButton">Description</button>
+        <button class="styled-button" id="toprightButton">Top Right</button>
+        <button class="styled-button" id="topleftButton">Top Left</button>
+        <button class="styled-button" id="topcenterButton">Top Center</button>
+        <button class="styled-button" id="bottomrightButton">Bottom Right</button>
+        <button class="styled-button" id="bottomleftButton">Bottom Left</button>
+        <button class="styled-button" id="bottomcenterButton">Bottom Center</button>
+        <button class="styled-button" id="warningButton">Warning</button>
+        <button class="styled-button" id="dangerButton">Danger</button>
+        <button class="styled-button" id="customButton">Custom</button>
+        <button class="styled-button" id="alwaysExpanded">Expanded</button>
+        <button class="styled-button" id="notExpanded">Not Expanded</button>
+    </div>
+
+    <script>
+        document.getElementById('successButton').addEventListener('click', function () {
+            toastManager.createToast('Success Notification', {
+                type: 'success',
+                position: 'bottom-right'
+            });
+        });
+
+        document.getElementById('infoButton').addEventListener('click', function () {
+            toastManager.createToast('Info Notification', {
+                type: 'info',
+                position: 'bottom-right'
+            });
+        });
+
+        document.getElementById('descriptionButton').addEventListener('click', function () {
+            toastManager.createToast('Event has been created', {
+                type: 'info',
+                description: "Monday, January 3rd at 6:00pm",
+                position: 'bottom-right',
+                duration: 5000
+            });
+        });
+
+        document.getElementById('toprightButton').addEventListener('click', function () {
+            toastManager.createToast('Event has been created', {
+                type: 'success',
+                description: "Monday, January 3rd at 6:00pm",
+                position: 'top-right',
+                duration: 500000
+            });
+        });
+
+        document.getElementById('topleftButton').addEventListener('click', function () {
+            toastManager.createToast('Event has been created', {
+                type: 'success',
+                description: "Monday, January 3rd at 6:00pm",
+                position: 'top-left',
+                duration: 5000
+            });
+        });
+
+        document.getElementById('topcenterButton').addEventListener('click', function () {
+            toastManager.createToast('Event has been created', {
+                type: 'success',
+                description: "Monday, January 3rd at 6:00pm",
+                position: 'top-center',
+                duration: 5000
+            });
+        });
+
+        document.getElementById('bottomrightButton').addEventListener('click', function () {
+            toastManager.createToast('Event has been created', {
+                type: 'success',
+                description: "Monday, January 3rd at 6:00pm",
+                position: 'bottom-right',
+                duration: 5000
+            });
+        });
+
+        document.getElementById('bottomleftButton').addEventListener('click', function () {
+            toastManager.createToast('Event has been created', {
+                type: 'success',
+                description: "Monday, January 3rd at 6:00pm",
+                position: 'bottom-left',
+                duration: 5000
+            });
+        });
+
+        document.getElementById('bottomcenterButton').addEventListener('click', function () {
+            toastManager.createToast('Event has been created', {
+                type: 'success',
+                description: "Monday, January 3rd at 6:00pm",
+                position: 'bottom-center',
+                duration: 5000
+            });
+        });
+
+        document.getElementById('warningButton').addEventListener('click', function () {
+            toastManager.createToast('Warning Notification', {
+                type: 'warning',
+                position: 'bottom-right'
+            });
+        });
+
+        document.getElementById('dangerButton').addEventListener('click', function () {
+            toastManager.createToast('Danger Notification', {
+                type: 'danger',
+                duration: 5000,
+                position: 'bottom-right'
+            });
+        });
+
+        document.getElementById('customButton').addEventListener('click', function () {
+            toastManager.createToast('', {
+                html: `
+                    <div style="display: flex; align-items: center;">
+                        <svg style="width: 18px; height: 18px; margin-right: 6px; margin-left: 6px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM16.7744 9.63269C17.1238 9.20501 17.0604 8.57503 16.6327 8.22559C16.2051 7.87615 15.5751 7.93957 15.2256 8.36725L10.6321 13.9892L8.65936 12.2524C8.24484 11.8874 7.61295 11.9276 7.248 12.3421C6.88304 12.7566 6.92322 13.3885 7.33774 13.7535L9.31046 15.4903C10.1612 16.2393 11.4637 16.1324 12.1808 15.2547L16.7744 9.63269Z" fill="currentColor"></path>
+                        </svg>
+                        <div>
+                            <p style="font-size: 13px; font-weight: 500; color: #1f2937;">Custom Notification</p>
+                            <p style="font-size: 12px; opacity: 0.7;">This is a custom HTML toast</p>
+                        </div>
+                    </div>`,
+                type: 'default',
+                duration: 5000,
+                position: 'bottom-right'
+            });
+        });
+
+        document.getElementById('alwaysExpanded').addEventListener('click', function () {
+            // Example configuration settings
+            const config = {
+                alwaysExpanded: true
+            };
+            toastManager.configure(config);
+        });
+        document.getElementById('notExpanded').addEventListener('click', function () {
+            // Example configuration settings
+            const config = {
+                alwaysExpanded: false
+            };
+            toastManager.configure(config);
+        });
+    </script>
+</body>
+
+</html>
