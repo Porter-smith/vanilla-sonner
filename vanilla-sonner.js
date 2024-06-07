@@ -284,7 +284,8 @@
         const yOffset = totalHeight;
 
         if (this.expanded) {
-          if (toast.position.includes("bottom")) {
+          console.log(position);
+          if (position.includes("bottom")) {
             toastElement.style.bottom = yOffset + "px";
             toastElement.style.top = "auto";
           } else {
@@ -293,7 +294,7 @@
           }
           toastElement.style.transform = "translateY(0)";
         } else {
-          if (toast.position.includes("bottom")) {
+          if (position.includes("bottom")) {
             toastElement.style.bottom = "0px";
             toastElement.style.top = "auto";
             toastElement.style.transform = `translateY(${
