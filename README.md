@@ -291,4 +291,3 @@ This project was inspired by and uses concepts from the following projects:
 - [Sonner by Emil Kowalski](https://github.com/emilkowalski/sonner)
 - [Svelte-Sonner by Wobsoriano](https://github.com/wobsoriano/svelte-sonner)
 
-This documentation outlines how to include `vanilla-sonner` in your project using a CDN and provides examples of how to use different types of toasts. Adjust the CDN URL to point to your actual repository.
