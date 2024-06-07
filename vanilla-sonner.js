@@ -21,11 +21,55 @@ import { getToastHTML } from "./toast-template.js";
       "bottom-center": [],
       "bottom-right": [],
     },
+    config: {
+      maxToasts: 3,
+      paddingBetweenToasts: 15,
+      alwaysExpanded: false,
+    },
+    configure: function (config) {
+      let configChanged = false;
+
+      if (config.maxToasts !== undefined) {
+        this.config.maxToasts = config.maxToasts;
+        configChanged = true;
+      }
+      if (config.paddingBetweenToasts !== undefined) {
+        this.config.paddingBetweenToasts = config.paddingBetweenToasts;
+        configChanged = true;
+      }
+      if (config.alwaysExpanded !== undefined) {
+        this.config.alwaysExpanded = config.alwaysExpanded;
+        configChanged = true;
+      }
+
+      if (configChanged) {
+        // Update UI with reflected changes
+        this.updateUI();
+      }
+    },
+    updateUI: function () {
+      const positions = [
+        "top-left",
+        "top-center",
+        "top-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right",
+      ];
+
+      positions.forEach((position) => {
+        if (this.toastContainers[position]) {
+          // Recalculate the height of the toasts container
+          this.calculateHeightOfToastsContainer(position);
+
+          // Stack the toasts again to apply the new configuration
+          this.stackToasts(position);
+        }
+      });
+    },
     toastContainers: {},
     toastsHovered: false,
     expanded: false,
-    paddingBetweenToasts: 15,
-    maxToasts: 3, // Maximum number of toasts in a container
     init: function () {
       const positions = [
         "top-left",
@@ -55,15 +99,19 @@ import { getToastHTML } from "./toast-template.js";
 
       // Event listeners for hover expansion
       container.addEventListener("mouseenter", () => {
-        this.toastsHovered = true;
-        this.expanded = true;
-        this.stackToasts(position);
+        if (!this.config.alwaysExpanded) {
+          this.toastsHovered = true;
+          this.expanded = true;
+          this.stackToasts(position);
+        }
       });
 
       container.addEventListener("mouseleave", () => {
-        this.toastsHovered = false;
-        this.expanded = false;
-        this.stackToasts(position);
+        if (!this.config.alwaysExpanded) {
+          this.toastsHovered = false;
+          this.expanded = false;
+          this.stackToasts(position);
+        }
       });
 
       return container;
@@ -114,7 +162,7 @@ import { getToastHTML } from "./toast-template.js";
       }
 
       // Check if the number of toasts exceeds the maxToasts
-      if (this.toasts[toast.position].length > this.maxToasts) {
+      if (this.toasts[toast.position].length > this.config.maxToasts) {
         const oldestToast = this.toasts[toast.position].pop();
         this.burnToast(oldestToast.id, toast.position);
       }
@@ -206,7 +254,7 @@ import { getToastHTML } from "./toast-template.js";
       console.log("position", position);
 
       // Calculate the height of the container holding the toasts
-      console.log("CALCUALTING");
+      console.log("CALCULATING");
       this.calculateHeightOfToastsContainer(position);
 
       // Get the top toast and set its zIndex
@@ -226,7 +274,7 @@ import { getToastHTML } from "./toast-template.js";
           ? document.getElementById(this.toasts[position][2].id)
           : null;
 
-      if (this.expanded) {
+      if (this.config.alwaysExpanded || this.expanded) {
         this.setExpandedStateStyles(
           topToast,
           middleToast,
@@ -263,7 +311,7 @@ import { getToastHTML } from "./toast-template.js";
       if (middleToast) {
         let middleToastPosition =
           topToast.getBoundingClientRect().height +
-          this.paddingBetweenToasts +
+          this.config.paddingBetweenToasts +
           "px";
         this.setToastPosition(
           middleToast,
@@ -279,10 +327,10 @@ import { getToastHTML } from "./toast-template.js";
       if (bottomToast) {
         let bottomToastPosition =
           topToast.getBoundingClientRect().height +
-          this.paddingBetweenToasts +
+          this.config.paddingBetweenToasts +
           (middleToast
             ? middleToast.getBoundingClientRect().height +
-              this.paddingBetweenToasts
+              this.config.paddingBetweenToasts
             : 0) +
           "px";
         this.setToastPosition(
@@ -355,7 +403,7 @@ import { getToastHTML } from "./toast-template.js";
       let totalHeight = 0;
       const toastsCount = this.toasts[position].length;
 
-      if (this.expanded) {
+      if (this.config.alwaysExpanded || this.expanded) {
         // Calculate the total height of all toasts when expanded
         this.toasts[position].forEach((toast, index) => {
           const toastElement = document.getElementById(toast.id);
@@ -364,7 +412,7 @@ import { getToastHTML } from "./toast-template.js";
 
           // Add padding between toasts, but not after the last toast
           if (index < toastsCount - 1) {
-            totalHeight += this.paddingBetweenToasts;
+            totalHeight += this.config.paddingBetweenToasts;
           }
         });
       } else {
@@ -420,4 +468,5 @@ import { getToastHTML } from "./toast-template.js";
     `;
     document.head.appendChild(style);
   });
+  global.toastManager = toastManager;
 })(window);
