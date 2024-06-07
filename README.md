@@ -8,8 +8,10 @@
 Include the following script tag in your HTML to load `vanilla-sonner` from the CDN:
 
 ```html
-  <script src="https://cdn.jsdelivr.net/gh/Porter-smith/vanilla-sonner@v0.0.1/dist/vanilla-sonner.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Porter-smith/vanilla-sonner@v0.0.1/dist/vanilla-sonner.min.js"></script>
 ```
+
+test
 
 ### Basic Usage
 
