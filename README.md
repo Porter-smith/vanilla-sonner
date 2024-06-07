@@ -1,5 +1,5 @@
 ![hero](.github/assets/cover.jpeg)
-**Note:** This is a highly experimental project. **Do not use it in production yet as it is a work in progress.**
+**Note:** This is a highly experimental project. **Do not use it in production yet as it is a work in progress and in early stages of development**
 
 ## Quick Start
 
