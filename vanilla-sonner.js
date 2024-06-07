@@ -276,24 +276,17 @@
       console.log("position", position);
 
       // Calculate the height of the container holding the toasts
+      console.log("CALCUALTING");
       this.calculateHeightOfToastsContainer(position);
 
       // Get the top toast and set its zIndex
       let topToast = document.getElementById(this.toasts[position][0].id);
-      topToast.style.zIndex = 100;
-
-      if (position.includes("bottom")) {
-        topToast.style.top = "auto";
-        topToast.style.bottom = "0px";
-      } else {
-        topToast.style.top = "0px";
-        topToast.style.bottom = "auto";
-      }
+      this.setToastPosition(topToast, position, 100, "0px", "0px");
 
       // If there's only one toast, no need to proceed further
       if (this.toasts[position].length == 1) return;
 
-      // Get the middle toast and bottom toast if they exist
+      // Get the middle and bottom toasts if they exist
       let middleToast =
         this.toasts[position].length > 1
           ? document.getElementById(this.toasts[position][1].id)
@@ -304,65 +297,101 @@
           : null;
 
       if (this.expanded) {
-        // Expanded state styles
-        if (middleToast) {
-          let middleToastPosition =
-            topToast.getBoundingClientRect().height +
-            this.paddingBetweenToasts +
-            "px";
-
-          middleToast.style.zIndex = 90;
-          if (position.includes("bottom")) {
-            middleToast.style.top = "auto";
-            middleToast.style.bottom = middleToastPosition;
-          } else {
-            middleToast.style.top = middleToastPosition;
-            middleToast.style.bottom = "auto";
-          }
-          middleToast.style.scale = "100%";
-          middleToast.style.transform = "translateY(0px)";
-        }
-
-        if (bottomToast) {
-          let bottomToastPosition =
-            topToast.getBoundingClientRect().height +
-            this.paddingBetweenToasts +
-            (middleToast ? middleToast.getBoundingClientRect().height : 0) +
-            this.paddingBetweenToasts +
-            "px";
-
-          bottomToast.style.zIndex = 80;
-          if (position.includes("bottom")) {
-            bottomToast.style.top = "auto";
-            bottomToast.style.bottom = bottomToastPosition;
-          } else {
-            bottomToast.style.top = bottomToastPosition;
-            bottomToast.style.bottom = "auto";
-          }
-          bottomToast.style.scale = "100%";
-          bottomToast.style.transform = "translateY(0px)";
-        }
+        this.setExpandedStateStyles(
+          topToast,
+          middleToast,
+          bottomToast,
+          position
+        );
       } else {
-        // Non-expanded state styles
-        if (middleToast) {
-          middleToast.style.zIndex = 90;
-          middleToast.style.scale = "94%";
-          this.alignBottom(topToast, middleToast, position);
-          middleToast.style.transform = position.includes("bottom")
-            ? "translateY(-16px)"
-            : "translateY(16px)";
-        }
-
-        if (bottomToast) {
-          bottomToast.style.zIndex = 80;
-          bottomToast.style.scale = "88%";
-          this.alignBottom(topToast, bottomToast, position);
-          bottomToast.style.transform = position.includes("bottom")
-            ? "translateY(-32px)"
-            : "translateY(32px)";
-        }
+        this.setCollapsedStateStyles(
+          topToast,
+          middleToast,
+          bottomToast,
+          position
+        );
       }
     },
+
+    setToastPosition: function (toast, position, zIndex, top, bottom) {
+      toast.style.zIndex = zIndex;
+      if (position.includes("bottom")) {
+        toast.style.top = "auto";
+        toast.style.bottom = bottom;
+      } else {
+        toast.style.top = top;
+        toast.style.bottom = "auto";
+      }
+    },
+
+    setExpandedStateStyles: function (
+      topToast,
+      middleToast,
+      bottomToast,
+      position
+    ) {
+      if (middleToast) {
+        let middleToastPosition =
+          topToast.getBoundingClientRect().height +
+          this.paddingBetweenToasts +
+          "px";
+        this.setToastPosition(
+          middleToast,
+          position,
+          90,
+          middleToastPosition,
+          middleToastPosition
+        );
+        middleToast.style.scale = "100%";
+        middleToast.style.transform = "translateY(0px)";
+      }
+
+      if (bottomToast) {
+        let bottomToastPosition =
+          topToast.getBoundingClientRect().height +
+          this.paddingBetweenToasts +
+          (middleToast
+            ? middleToast.getBoundingClientRect().height +
+              this.paddingBetweenToasts
+            : 0) +
+          "px";
+        this.setToastPosition(
+          bottomToast,
+          position,
+          80,
+          bottomToastPosition,
+          bottomToastPosition
+        );
+        bottomToast.style.scale = "100%";
+        bottomToast.style.transform = "translateY(0px)";
+      }
+    },
+
+    setCollapsedStateStyles: function (
+      topToast,
+      middleToast,
+      bottomToast,
+      position
+    ) {
+      if (middleToast) {
+        middleToast.style.zIndex = 90;
+        middleToast.style.scale = "94%";
+        this.alignBottom(topToast, middleToast, position);
+        middleToast.style.transform = position.includes("bottom")
+          ? "translateY(-16px)"
+          : "translateY(16px)";
+      }
+
+      if (bottomToast) {
+        bottomToast.style.zIndex = 80;
+        bottomToast.style.scale = "88%";
+        this.alignBottom(topToast, bottomToast, position);
+        bottomToast.style.transform = position.includes("bottom")
+          ? "translateY(-32px)"
+          : "translateY(32px)";
+      }
+    },
+
     alignBottom: function (element1, element2, position) {
       // Get the top position and height of the first element
       let top1 = element1.offsetTop;
