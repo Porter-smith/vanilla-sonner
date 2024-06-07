@@ -1,6 +1,6 @@
 ### vanilla-sonner
 
-![hero](.github/assets/cover.jpg)
+![hero](.github/assets/cover.jpeg)
 **Note:** This is a highly experimental project. Do not use it in production yet as it is a work in progress.
 
 ## Quick Start
@@ -290,4 +290,3 @@ This project was inspired by and uses concepts from the following projects:
 - [Pines Toast Documentation](https://devdojo.com/pines/docs/toast)
 - [Sonner by Emil Kowalski](https://github.com/emilkowalski/sonner)
 - [Svelte-Sonner by Wobsoriano](https://github.com/wobsoriano/svelte-sonner)
-
