@@ -1,7 +1,3 @@
-Certainly! Here's the updated README with professional wording, clearly stating that the project is not finished and should not be used in production yet:
-
----
-
 ![hero](.github/assets/cover.jpeg)
 **Note:** This is a highly experimental project. **Do not use it in production yet as it is a work in progress.**
 
@@ -204,5 +200,3 @@ This project was inspired by and uses concepts from the following projects:
 - [Svelte-Sonner by Wobsoriano](https://github.com/wobsoriano/svelte-sonner)
 
 ---
-
-This should provide a straightforward introduction and quick-start guide for users to implement toast notifications using `vanilla-sonner`. **Please note that the project is not complete and certain features are still under development.**
