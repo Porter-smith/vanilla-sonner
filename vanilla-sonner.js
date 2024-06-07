@@ -193,23 +193,19 @@
               </div>
             `
             }
-            <span style="position: absolute; right: 0; padding: 6px; margin-right: 10px; color: #9ca3af; transition: opacity 0.1s ease-in-out; border-radius: 9999px; cursor: pointer; top: 50%; transform: translateY(-50%);">
-      
-            </span>
+            <span style="height: 24px; display: flex; justify-content: center; align-items: center; box-sizing: border-box; position: absolute; right: 0; padding: 0.375rem; margin-right: 10px; color: #9ca3af; border-radius: 9999px; cursor: pointer; top: 50%; transform: translateY(-50%); pointer-events: auto;" id="toast-close-button">
+
+            <svg style="width: 0.75rem; height: 0.75rem;" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+          </span>
+          
           </span>
         `;
 
       const closeButton = toastElement.querySelector("span");
       closeButton.addEventListener("click", () => {
-        this.removeToast(toast.id, toast.position);
-      });
-
-      toastElement.addEventListener("mouseenter", () => {
-        closeButton.style.opacity = "1";
-      });
-
-      toastElement.addEventListener("mouseleave", () => {
-        closeButton.style.opacity = "0";
+        this.burnToast(toast.id, toast.position);
       });
 
       this.toastContainers[toast.position].appendChild(toastElement);
@@ -463,6 +459,7 @@
       this.toastContainers[position].style.height = totalHeight + "px";
     },
   };
+
   // Event listener for the 'toast-show' event
   window.addEventListener("toast-show", function (event) {
     const { message, description, type, position, html, duration } =
@@ -479,5 +476,20 @@
   // Initialize toastManager on DOMContentLoaded
   document.addEventListener("DOMContentLoaded", function () {
     toastManager.init();
+    // Inject styles for hover effect
+    const style = document.createElement("style");
+    style.innerHTML = `
+    #toast-close-button {
+      transition: background-color 100ms cubic-bezier(0.4, 0, 0.2, 1), 
+                  color 100ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  
+    #toast-close-button:hover {
+      color: rgb(107, 114, 128);
+      background-color: rgb(249, 250, 251);
+    }
+  
+    `;
+    document.head.appendChild(style);
   });
 })(window);
