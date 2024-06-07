@@ -1,5 +1,6 @@
 ### vanilla-sonner
 
+![hero](.github/assets/cover.jpg)
 **Note:** This is a highly experimental project. Do not use it in production yet as it is a work in progress.
 
 ## Quick Start
