@@ -422,37 +422,41 @@
         return;
       }
 
-      const lastToast = this.toasts[position][this.toasts[position].length - 1];
-      const lastToastRectangle = document
-        .getElementById(lastToast.id)
-        .getBoundingClientRect();
-
-      const firstToast = this.toasts[position][0];
-      const firstToastRectangle = document
-        .getElementById(firstToast.id)
-        .getBoundingClientRect();
+      let totalHeight = 0;
+      const toastsCount = this.toasts[position].length;
 
       if (this.expanded) {
-        if (position.includes("bottom")) {
-          this.toastContainers[position].style.height =
-            firstToastRectangle.top +
-            firstToastRectangle.height -
-            lastToastRectangle.top +
-            "px";
-        } else {
-          this.toastContainers[position].style.height =
-            lastToastRectangle.top +
-            lastToastRectangle.height -
-            firstToastRectangle.top +
-            "px";
-        }
+        // Calculate the total height of all toasts when expanded
+        this.toasts[position].forEach((toast, index) => {
+          const toastElement = document.getElementById(toast.id);
+          const toastHeight = toastElement.getBoundingClientRect().height;
+          totalHeight += toastHeight;
+
+          // Add padding between toasts, but not after the last toast
+          if (index < toastsCount - 1) {
+            totalHeight += this.paddingBetweenToasts;
+          }
+        });
       } else {
-        this.toastContainers[position].style.height =
-          firstToastRectangle.height + "px";
+        // Calculate the height of the container when toasts are collapsed
+        this.toasts[position].forEach((toast, index) => {
+          const toastElement = document.getElementById(toast.id);
+          const toastHeight = toastElement.getBoundingClientRect().height;
+
+          // The top toast is fully visible
+          if (index === 0) {
+            totalHeight += toastHeight;
+          } else {
+            // Subsequent toasts are partially visible (for stack effect)
+            const overlap = 16; // Adjust this value based on your design for overlap amount
+            totalHeight += overlap;
+          }
+        });
       }
+
+      this.toastContainers[position].style.height = totalHeight + "px";
     },
   };
-
   // Event listener for the 'toast-show' event
   window.addEventListener("toast-show", function (event) {
     const { message, description, type, position, html, duration } =
