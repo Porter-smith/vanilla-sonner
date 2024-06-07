@@ -293,75 +293,77 @@
       // If there's only one toast, no need to proceed further
       if (this.toasts[position].length == 1) return;
 
-      // Get the middle toast and set its zIndex
-      let middleToast = document.getElementById(this.toasts[position][1].id);
-      middleToast.style.zIndex = 90;
+      // Get the middle toast and bottom toast if they exist
+      let middleToast =
+        this.toasts[position].length > 1
+          ? document.getElementById(this.toasts[position][1].id)
+          : null;
+      let bottomToast =
+        this.toasts[position].length > 2
+          ? document.getElementById(this.toasts[position][2].id)
+          : null;
 
-      // Adjust the middle toast position based on whether the container is expanded
       if (this.expanded) {
-        let middleToastPosition =
-          topToast.getBoundingClientRect().height +
-          this.paddingBetweenToasts +
-          "px";
+        // Expanded state styles
+        if (middleToast) {
+          let middleToastPosition =
+            topToast.getBoundingClientRect().height +
+            this.paddingBetweenToasts +
+            "px";
 
-        if (position.includes("bottom")) {
-          middleToast.style.top = "auto";
-          middleToast.style.bottom = middleToastPosition;
-        } else {
-          middleToast.style.top = middleToastPosition;
-          middleToast.style.bottom = "auto";
+          middleToast.style.zIndex = 90;
+          if (position.includes("bottom")) {
+            middleToast.style.top = "auto";
+            middleToast.style.bottom = middleToastPosition;
+          } else {
+            middleToast.style.top = middleToastPosition;
+            middleToast.style.bottom = "auto";
+          }
+          middleToast.style.scale = "100%";
+          middleToast.style.transform = "translateY(0px)";
         }
 
-        middleToast.style.scale = "100%";
-        middleToast.style.transform = "translateY(0px)";
+        if (bottomToast) {
+          let bottomToastPosition =
+            topToast.getBoundingClientRect().height +
+            this.paddingBetweenToasts +
+            (middleToast ? middleToast.getBoundingClientRect().height : 0) +
+            this.paddingBetweenToasts +
+            "px";
+
+          bottomToast.style.zIndex = 80;
+          if (position.includes("bottom")) {
+            bottomToast.style.top = "auto";
+            bottomToast.style.bottom = bottomToastPosition;
+          } else {
+            bottomToast.style.top = bottomToastPosition;
+            bottomToast.style.bottom = "auto";
+          }
+          bottomToast.style.scale = "100%";
+          bottomToast.style.transform = "translateY(0px)";
+        }
       } else {
-        middleToast.style.scale = "94%";
-        this.alignBottom(topToast, middleToast);
-        middleToast.style.transform = position.includes("bottom")
-          ? "translateY(-16px)"
-          : "translateY(16px)";
-      }
-
-      // If there are only two toasts, no need to proceed further
-      if (this.toasts[position].length == 2) return;
-
-      // Get the bottom toast and set its zIndex
-      let bottomToast = document.getElementById(this.toasts[position][2].id);
-      bottomToast.style.zIndex = 80;
-
-      // Adjust the bottom toast position based on whether the container is expanded
-      if (this.expanded) {
-        let bottomToastPosition =
-          topToast.getBoundingClientRect().height +
-          this.paddingBetweenToasts +
-          middleToast.getBoundingClientRect().height +
-          this.paddingBetweenToasts +
-          "px";
-
-        if (position.includes("bottom")) {
-          bottomToast.style.top = "auto";
-          bottomToast.style.bottom = bottomToastPosition;
-        } else {
-          bottomToast.style.top = bottomToastPosition;
-          bottomToast.style.bottom = "auto";
+        // Non-expanded state styles
+        if (middleToast) {
+          middleToast.style.zIndex = 90;
+          middleToast.style.scale = "94%";
+          this.alignBottom(topToast, middleToast, position);
+          middleToast.style.transform = position.includes("bottom")
+            ? "translateY(-16px)"
+            : "translateY(16px)";
         }
 
-        bottomToast.style.scale = "100%";
-        bottomToast.style.transform = "translateY(0px)";
-      } else {
-        bottomToast.style.scale = "88%";
-        this.alignBottom(topToast, bottomToast);
-        bottomToast.style.transform = position.includes("bottom")
-          ? "translateY(-32px)"
-          : "translateY(32px)";
+        if (bottomToast) {
+          bottomToast.style.zIndex = 80;
+          bottomToast.style.scale = "88%";
+          this.alignBottom(topToast, bottomToast, position);
+          bottomToast.style.transform = position.includes("bottom")
+            ? "translateY(-32px)"
+            : "translateY(32px)";
+        }
       }
-
-      // If there are more than three toasts, adjust the middle toast position again if needed
-      if (this.toasts[position].length == 3) return;
-
-      return;
     },
-    alignBottom: function (element1, element2) {
+    alignBottom: function (element1, element2, position) {
       // Get the top position and height of the first element
       let top1 = element1.offsetTop;
       let height1 = element1.offsetHeight;
@@ -372,8 +374,18 @@
       // Calculate the top position for the second element
       let top2 = top1 + (height1 - height2);
 
-      // Apply the calculated top position to the second element
-      element2.style.top = top2 + "px";
+      // Log the calculated positions for debugging
+      console.log("alignBottom", { top1, height1, height2, top2 });
+
+      if (position.includes("bottom")) {
+        // For bottom-aligned toasts, set the bottom position instead of top
+        let bottom1 = parseInt(window.getComputedStyle(element1).bottom, 10);
+        let bottom2 = bottom1 + (height1 - height2);
+        element2.style.bottom = bottom2 + "px";
+      } else {
+        // Apply the calculated top position to the second element
+        element2.style.top = top2 + "px";
+      }
     },
     calculateHeightOfToastsContainer: function (position) {
       if (this.toasts[position].length === 0) {
