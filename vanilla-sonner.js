@@ -273,6 +273,16 @@
       if (this.toasts[position].length === 0) return;
 
       let totalHeight = 0;
+      let firstToastHeight = 0;
+
+      if (this.toasts[position].length > 0) {
+        const firstToastElement = document.getElementById(
+          this.toasts[position][0].id
+        );
+        if (firstToastElement) {
+          firstToastHeight = firstToastElement.getBoundingClientRect().height;
+        }
+      }
 
       this.toasts[position].forEach((toast, index) => {
         const toastElement = document.getElementById(toast.id);
@@ -280,7 +290,6 @@
 
         toastElement.style.zIndex = 100 - index * 10; // Adjust the zIndex for layering
 
-        const toastHeight = toastElement.getBoundingClientRect().height;
         const yOffset = totalHeight;
 
         if (this.expanded) {
@@ -292,6 +301,7 @@
             toastElement.style.bottom = "auto";
           }
           toastElement.style.transform = "translateY(0)";
+          toastElement.style.height = "auto"; // Reset to auto when expanded
         } else {
           if (toast.position.includes("bottom")) {
             toastElement.style.bottom = "0px";
@@ -302,9 +312,10 @@
             toastElement.style.bottom = "auto";
             toastElement.style.transform = `translateY(${index * 16}px)`;
           }
+          toastElement.style.height = `${firstToastHeight}px`; // Set uniform height when collapsed
         }
 
-        totalHeight += toastHeight + this.paddingBetweenToasts;
+        totalHeight += firstToastHeight + this.paddingBetweenToasts;
       });
 
       this.calculateHeightOfToastsContainer(position);
