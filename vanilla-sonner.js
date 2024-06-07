@@ -284,7 +284,6 @@
         const yOffset = totalHeight;
 
         if (this.expanded) {
-          console.log(position);
           if (position.includes("bottom")) {
             toastElement.style.bottom = yOffset + "px";
             toastElement.style.top = "auto";
@@ -293,6 +292,7 @@
             toastElement.style.bottom = "auto";
           }
           toastElement.style.transform = "translateY(0)";
+          toastElement.style.scale = "100%";
         } else {
           if (position.includes("bottom")) {
             toastElement.style.bottom = "0px";
@@ -307,14 +307,15 @@
               1 - index * 0.06
             })`;
           }
+          toastElement.style.scale = `${100 - index * 6}%`;
         }
 
         totalHeight +=
           toastHeight + (this.expanded ? this.paddingBetweenToasts : 0);
       });
+
       this.calculateHeightOfToastsContainer(position);
     },
-
     calculateHeightOfToastsContainer: function (position) {
       if (this.toasts[position].length === 0) {
         this.toastContainers[position].style.height = "0px";
