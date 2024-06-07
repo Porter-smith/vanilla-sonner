@@ -1,9 +1,9 @@
-Certainly! Here's the updated README with a simplified basic usage example, and a complete `index.html` file that users can copy and paste:
+Certainly! Here's the updated README with professional wording, clearly stating that the project is not finished and should not be used in production yet:
 
 ---
 
 ![hero](.github/assets/cover.jpeg)
-**Note:** This is a highly experimental project. Do not use it in production yet as it is a work in progress.
+**Note:** This is a highly experimental project. **Do not use it in production yet as it is a work in progress.**
 
 ## Quick Start
 
@@ -133,7 +133,9 @@ toastManager.createToast("Event has not been created", {
 });
 ```
 
-### Custom Toast (WIP NOT FINISHED)
+### Custom Toast
+
+_Not finished yet._
 
 Create a custom toast with additional description:
 
@@ -146,7 +148,9 @@ toastManager.createToast("Event has been created", {
 });
 ```
 
-### Action Toast (WIP NOT FINISHED)
+### Action Toast
+
+_Not finished yet._
 
 Create a toast with an action button:
 
@@ -161,7 +165,9 @@ toastManager.createToast("Event has been created", {
 });
 ```
 
-### Promise Toast (WIP NOT FINISHED)
+### Promise Toast
+
+_Not finished yet._
 
 Create a toast that starts in a loading state and updates based on a promise:
 
@@ -199,4 +205,4 @@ This project was inspired by and uses concepts from the following projects:
 
 ---
 
-This should provide a straightforward introduction and quick-start guide for users to implement toast notifications using `vanilla-sonner`.
+This should provide a straightforward introduction and quick-start guide for users to implement toast notifications using `vanilla-sonner`. **Please note that the project is not complete and certain features are still under development.**
