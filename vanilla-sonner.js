@@ -296,17 +296,21 @@
           if (toast.position.includes("bottom")) {
             toastElement.style.bottom = "0px";
             toastElement.style.top = "auto";
-            toastElement.style.transform = `translateY(${index * -16}px)`;
+            toastElement.style.transform = `translateY(${
+              index * -16
+            }px) scale(${1 - index * 0.06})`;
           } else {
             toastElement.style.top = "0px";
             toastElement.style.bottom = "auto";
-            toastElement.style.transform = `translateY(${index * 16}px)`;
+            toastElement.style.transform = `translateY(${index * 16}px) scale(${
+              1 - index * 0.06
+            })`;
           }
         }
 
-        totalHeight += toastHeight + this.paddingBetweenToasts;
+        totalHeight +=
+          toastHeight + (this.expanded ? this.paddingBetweenToasts : 0);
       });
-
       this.calculateHeightOfToastsContainer(position);
     },
 
