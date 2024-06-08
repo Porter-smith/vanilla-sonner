@@ -85,7 +85,7 @@ import { getToastHTML } from "./toast-template.js";
       });
     },
     createContainer: function (position) {
-      const container = document.createElement("div");
+      const container = document.createElement("ol");
       container.id = `toastContainer-${position}`;
       container.style.position = "fixed";
       container.style.display = "block";
@@ -93,6 +93,10 @@ import { getToastHTML } from "./toast-template.js";
       container.style.zIndex = "99";
       container.style.maxWidth = "300px";
       container.style.margin = "24px";
+      container.setAttribute("aria-label", "Notifications");
+      container.setAttribute("role", "region");
+      container.setAttribute("tabindex", "-1");
+      container.setAttribute("data-position", position);
       this.setPosition(container, position);
       document.body.appendChild(container);
       this.toastContainers[position] = container;
@@ -170,13 +174,17 @@ import { getToastHTML } from "./toast-template.js";
       this.renderToast(toast);
     },
     renderToast: function (toast) {
-      const toastElement = document.createElement("div");
+      const toastElement = document.createElement("li");
       toastElement.id = toast.id;
       toastElement.style.position = "absolute";
       toastElement.style.width = "100%";
       toastElement.style.transition = "all 0.3s ease-out";
       toastElement.style.maxWidth = "300px";
       toastElement.style.pointerEvents = "none";
+      toastElement.setAttribute("role", "status");
+      toastElement.setAttribute("aria-live", "polite");
+      toastElement.setAttribute("aria-atomic", "true");
+      toastElement.setAttribute("tabindex", "0");
       if (!toast.description) {
         toastElement.classList.add("toast-no-description");
       }
@@ -214,6 +222,7 @@ import { getToastHTML } from "./toast-template.js";
         this.burnToast(toast.id, toast.position);
       }, durationTimeout);
     },
+
     burnToast: function (toastId, position) {
       const fadeOutTimeout = 300; // Timeout for the fade-out animation
       const toastElement = document.getElementById(toastId);
@@ -455,6 +464,16 @@ import { getToastHTML } from "./toast-template.js";
     // Inject styles for hover effect
     const style = document.createElement("style");
     style.innerHTML = `
+    ol[data-position] {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    li[data-sonner-toast] {
+      margin-bottom: 14px;
+      position: relative;
+    }
     #toast-close-button {
       transition: background-color 100ms cubic-bezier(0.4, 0, 0.2, 1), 
                   color 100ms cubic-bezier(0.4, 0, 0.2, 1);
