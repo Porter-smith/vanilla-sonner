@@ -190,7 +190,7 @@ import { getToastHTML } from "./toast-template.js";
 
       toastElement.innerHTML = getToastHTML(toast);
 
-      const closeButton = toastElement.querySelector("span");
+      const closeButton = toastElement.querySelector("#toast-close-button");
       closeButton.addEventListener("click", () => {
         this.burnToast(toast.id, toast.position);
       });
