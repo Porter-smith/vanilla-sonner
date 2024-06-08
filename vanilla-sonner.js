@@ -180,7 +180,6 @@ import { getToastHTML } from "./toast-template.js";
       toastElement.style.width = "100%";
       toastElement.style.transition = "all 0.3s ease-out";
       toastElement.style.maxWidth = "300px";
-      toastElement.style.pointerEvents = "none";
       toastElement.setAttribute("role", "status");
       toastElement.setAttribute("aria-live", "polite");
       toastElement.setAttribute("aria-atomic", "true");
