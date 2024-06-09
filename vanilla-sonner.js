@@ -98,7 +98,7 @@ import { getToastHTML } from "./toast-template.js";
       container.setAttribute("tabindex", "-1");
       container.setAttribute("data-position", position);
       this.setPosition(container, position);
-      document.body.appendChild(container);
+      document.documentElement.appendChild(container);
       this.toastContainers[position] = container;
 
       // Event listeners for hover expansion
