@@ -90,7 +90,7 @@ import { getToastHTML } from "./toast-template.js";
       container.style.position = "fixed";
       container.style.display = "block";
       container.style.width = "100%";
-      container.style.zIndex = "99";
+      container.style.zIndex = "9999";
       container.style.maxWidth = "300px";
       container.style.margin = "24px";
       container.setAttribute("aria-label", "Notifications");
