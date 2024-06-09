@@ -444,25 +444,9 @@ import { getToastHTML } from "./toast-template.js";
     },
   };
 
-  // Event listener for the 'toast-show' event
-  window.addEventListener("toast-show", function (event) {
-    const { message, description, type, position, html, duration } =
-      event.detail;
-    toastManager.createToast(message, {
-      description,
-      type,
-      position,
-      html,
-      duration,
-    });
-  });
-
-  // Initialize toastManager on DOMContentLoaded
-  document.addEventListener("DOMContentLoaded", function () {
-    toastManager.init();
-    // Inject styles for hover effect
-    const style = document.createElement("style");
-    style.innerHTML = `
+  // Inject styles
+  const style = document.createElement("style");
+  style.innerHTML = `
     ol[data-position] {
       list-style: none;
       padding: 0;
@@ -484,7 +468,6 @@ import { getToastHTML } from "./toast-template.js";
     }
   
     `;
-    document.head.appendChild(style);
-  });
+  document.head.appendChild(style);
   global.toastManager = toastManager;
 })(window);
