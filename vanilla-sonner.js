@@ -453,10 +453,7 @@ import { getToastHTML } from "./toast-template.js";
       margin: 0;
     }
     
-    li[data-sonner-toast] {
-      margin-bottom: 14px;
-      position: relative;
-    }
+
     #toast-close-button {
       transition: background-color 100ms cubic-bezier(0.4, 0, 0.2, 1), 
                   color 100ms cubic-bezier(0.4, 0, 0.2, 1);
